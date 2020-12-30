@@ -1,0 +1,211 @@
+﻿<html>
+
+<body>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        #ytb-panel {
+            background: rgba(23, 23, 23, 0.7);
+            width: 300px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 10px 33px 10px 10px;
+        }
+
+        .left-panel {
+            float: left;
+            width: 36px;
+        }
+
+        .right-panel {
+            float: left;
+            width: calc(100% - 36px);
+            margin-top: 4px;
+        }
+
+        .ytb-time {
+            font-family: 'YouTube Noto',Roboto,Arial,Helvetica,sans-serif;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .ytb-progress {
+            display: block;
+            position: relative;
+            width: 100%;
+            height: 5px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .expand {
+            height: 5px;
+            background: #54acff;
+            position: absolute;
+            box-shadow: -1px 0px 10px 1px rgba(32, 205, 255, 0.4);
+            width: 0%;
+            max-width: 100%;
+            -moz-animation: html5 2s ease-out;
+            -webkit-animation: html5 2s ease-out;
+        }
+    </style>
+
+    <div id='player'></div>
+    <div id='ytb-panel'>
+        <div class='left-panel'>
+            <svg height='36px' width='36px' version='1.1' viewBox='0 0 36 36' width='100%' fill='#fff'>
+                <path id='path-play-button'></path>
+            </svg>
+        </div>
+        <div class='right-panel'>
+            <div class='ytb-time'>
+                <span id='current-time'>00:00</span> / <span id='duration'>00:00</span>
+            </div>
+            <div class='ytb-progress'><span id='progress-bar' class='expand'></span></div>
+        </div>
+    </div>
+
+    <script>
+        var tag = document.createElement('script');
+        var button_play = 'M 12,26 18.5,22 18.5,14 12,10 z M 18.5,22 25,18 25,18 18.5,14 z';
+        var button_pause = 'M 12,26 16,26 16,10 12,10 z M 21,26 25,26 25,10 21,10 z';
+        var time_update_interval;
+
+        tag.src = 'https://www.youtube.com/iframe_api';
+
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        updatePlayControl(false);
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: document.body.clientHeight,
+                width: document.body.clientWidth,
+                playerVars: { 'autoplay': 0, 'control': 0 },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+
+            updateTimerDisplay();
+            updateProgressBar();
+
+            clearInterval(time_update_interval);
+
+            time_update_interval = setInterval(function () {
+                updateTimerDisplay();
+                updateProgressBar();
+            }, 1000);
+        }
+
+        function onPlayerStateChange(event) {
+            console.log(event.data);
+            if (event.data == YT.PlayerState.PLAYING) updatePlayControl(true);
+            else updatePlayControl(false);
+
+        }
+
+        function hideAllComponent() {
+            var player = player.getIframe().ownerDocument.body.children;
+            console.log(player);
+            //if (player.hasChildNodes) var child = player.childNodes;
+
+            //var i;
+            //for (i = 0; i < child.length; i++) {
+            //    if (child[i].style) {
+            //        child[i].style.display = 'none';
+            //    }
+            //}
+
+        }
+
+        function updatePlayControl(play) {
+            if (play) {
+                document.getElementById('path-play-button').setAttribute('d', button_pause);
+
+            } else {
+                document.getElementById('path-play-button').setAttribute('d', button_play);
+
+            }
+        }
+
+        function updateTimerDisplay() {
+            console.log(player.getCurrentTime());
+            console.log(player.getDuration());
+            document.getElementById('current-time').textContent = formatTime(player.getCurrentTime());
+            document.getElementById('duration').textContent = formatTime(player.getDuration());
+
+        }
+        document.getElementById('progress-bar').addEventListener('mouseup touchend', function (e) {
+
+            var newTime = player.getDuration() * (e.target.value / 100);
+
+            player.seekTo(newTime);
+
+        });
+        document.body.onresize = function () {
+            player.setSize(document.body.clientWidth, document.body.clientHeight);
+        }
+
+        function updateProgressBar() {
+            document.getElementById('progress-bar').style.width = (player.getCurrentTime() / player.getDuration()) * 100 + '%';
+        }
+
+        function formatTime(time) {
+            time = Math.round(time);
+
+            var hours;
+            var minutes = Math.floor(time / 60),
+                seconds = time - minutes * 60;
+
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            if (minutes > 59) {
+                hours = Math.floor(minutes / 60);
+                minutes = minutes - hours * 60;
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+
+                return hours + ':' + minutes + ':' + seconds;
+            }
+
+            return minutes + ':' + seconds;
+        }
+
+        function stopVideo() {
+            player.stopVideo();
+        }
+        function pauseVideo() {
+            player.pauseVideo();
+        }
+        function playVideo() {
+            player.playVideo();
+
+        }
+        function replayVideo() {
+            player.seekTo(0);
+            player.playVideo();
+        }
+        function loadVideo(videoId) {
+            player.loadVideoById(videoId);
+            player.stopVideo();
+        }
+        function checkLoaded() {
+            if (player.getVideoData().video_id === undefined) return false;
+            else return true;
+        }
+        function showPanel(show) {
+            if (show) document.getElementById('ytb-panel').style.display = 'block';
+            else document.getElementById('ytb-panel').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
