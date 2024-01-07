@@ -70,28 +70,25 @@
 
     <script>  
          function checkPlayed(){
-            console.log(player.getPlayerState());
+            console.log("STATE-" + player.getPlayerState());
          }
          function onPlayerStateChange(event) {
-            console.log(event.data);
-            if (event.data == YT.PlayerState.PLAYING) updatePlayControl(true);
-            else updatePlayControl(false);
+            console.log("STATE-" + event.data));
+            updatePlayControl(event.data === YT.PlayerState.PLAYING);
 
         }
         
         function updatePlayControl(play) {
             if (play) {
                 document.getElementById('path-play-button').setAttribute('d', button_pause);
-
             } else {
                 document.getElementById('path-play-button').setAttribute('d', button_play);
-
             }
         }
 
         function updateTimerDisplay() {
-            console.log(player.getCurrentTime());
-            console.log(player.getDuration());
+            console.log("TIME-" + player.getCurrentTime());
+            console.log("DURATION-" + player.getDuration());
             document.getElementById('current-time').textContent = formatTime(player.getCurrentTime());
             document.getElementById('duration').textContent = formatTime(player.getDuration());
 
@@ -113,7 +110,7 @@
             player = new YT.Player('player', {
                 height: document.body.clientHeight,
                 width: document.body.clientWidth,
-                playerVars: { 'autoplay': 0, 'control': 0 },
+                playerVars: { 'autoplay': 0, 'controls': 0, 'disablekb': 1 },
                 events: {
                     'onReady': onPlayerReady,
                     'onStateChange': onPlayerStateChange
@@ -135,9 +132,6 @@
         }       
 
         function hideAllComponent() {
-           const playerIframe = document.getElementById("player");
-            const doc = playerIframe.ownerDocument;
-            doc.body.innerHTML += '<style>.ytp-ce-element, .ytp-pause-overlay-container, .ytp-gradient-bottom, .ytp-chrome-bottom, .ytp-chrome-top { display: none !important;}</style>';
         }
         
         document.getElementById('progress-bar').addEventListener('mouseup touchend', function (e) {
@@ -177,34 +171,46 @@
         }
 
         function stopVideo() {
-            player.stopVideo();
+            if(checkLoaded()) {
+                player.stopVideo();
+            }
         }
         function pauseVideo() {
-            player.pauseVideo();
+            if(checkLoaded() && player.getPlayerState() === YT.PlayerState.PLAYING) {
+                player.pauseVideo();
+            }
         }
         function playVideo() {
-            player.playVideo();
-
+            if(checkLoaded()) {
+                player.playVideo();
+            }
         }
         function replayVideo() {
-            player.seekTo(0);
-            player.playVideo();
+            if(checkLoaded()) {
+                player.seekTo(0);
+                player.playVideo();
+            }
         }
         function loadVideo(videoId) {
             player.loadVideoById(videoId);
-            player.stopVideo();
+            stopVideo();
+        }
+        function playFirstVideo(videoId) {
+            loadVideo(videoId);
+            var time_load_interval = setInterval(function () {
+                if(checkLoaded()) {
+                    playVideo();
+                    clearInterval(time_load_interval);
+                }
+            }, 100);
         }
         function checkLoaded() {
-            if (player.getVideoData().video_id === undefined) return false;
-            else return true;
+            return (player != null && player.getPlayerState() !== YT.PlayerState.UNSTARTED);
         }
         function showPanel(show) {
             if (show) document.getElementById('ytb-panel').style.display = 'block';
             else document.getElementById('ytb-panel').style.display = 'none';
-        }
-        
-        
-        
+        }  
     </script>
 </body>
 </html>
