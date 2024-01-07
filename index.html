@@ -6,12 +6,6 @@
             margin: 0;
         }
 
-        /* Customize the components start */
-        .ytp-ce-element, .ytp-pause-overlay-container, .ytp-gradient-bottom, .ytp-chrome-bottom, .ytp-chrome-top {
-            display: none !important;
-        }
-        /* Customize the components end */
-
         #ytb-panel {
             background: rgba(23, 23, 23, 0.7);
             width: 300px;
@@ -125,6 +119,10 @@
                     'onStateChange': onPlayerStateChange
                 }
             });
+
+            const myIframe = document.getElementById("player");
+            const doc = myIframe.contentDocument;
+            doc.body.innerHTML += '<style>.ytp-ce-element, .ytp-pause-overlay-container, .ytp-gradient-bottom, .ytp-chrome-bottom, .ytp-chrome-top { display: none !important;}</style>';
         }
 
         function onPlayerReady(event) {
