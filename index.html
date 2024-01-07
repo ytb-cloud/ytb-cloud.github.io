@@ -122,7 +122,7 @@
 
             const playerIframe = document.getElementById("player");
             const doc = playerIframe.ownerDocument;
-            playerIframe..onload = function() {
+            playerIframe.onload = function() {
                 doc.body.innerHTML += '<style>.ytp-ce-element, .ytp-pause-overlay-container, .ytp-gradient-bottom, .ytp-chrome-bottom, .ytp-chrome-top { display: none !important;}</style>';
             }
         }
