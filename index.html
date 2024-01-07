@@ -122,10 +122,7 @@
         }
 
         function onPlayerReady(event) {           
-            const playerIframe = document.getElementById("player");
-            const doc = playerIframe.ownerDocument;
-            doc.body.innerHTML += '<style>.ytp-ce-element, .ytp-pause-overlay-container, .ytp-gradient-bottom, .ytp-chrome-bottom, .ytp-chrome-top { display: none !important;}</style>';
-        
+            
             updateTimerDisplay();
             updateProgressBar();
 
@@ -138,17 +135,9 @@
         }       
 
         function hideAllComponent() {
-            var player = player.getIframe().ownerDocument.body.children;
-            console.log(player);
-            //if (player.hasChildNodes) var child = player.childNodes;
-
-            //var i;
-            //for (i = 0; i < child.length; i++) {
-            //    if (child[i].style) {
-            //        child[i].style.display = 'none';
-            //    }
-            //}
-
+           const playerIframe = document.getElementById("player");
+            const doc = playerIframe.ownerDocument;
+            doc.body.innerHTML += '<style>.ytp-ce-element, .ytp-pause-overlay-container, .ytp-gradient-bottom, .ytp-chrome-bottom, .ytp-chrome-top { display: none !important;}</style>';
         }
         
         document.getElementById('progress-bar').addEventListener('mouseup touchend', function (e) {
