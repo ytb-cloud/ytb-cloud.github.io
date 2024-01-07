@@ -68,31 +68,7 @@
         </div>
     </div>
 
-    <script>  
-         function checkPlayed(){
-            console.log("STATE-" + player.getPlayerState());
-         }
-         function onPlayerStateChange(event) {
-            console.log("STATE-" + event.data);
-            updatePlayControl(event.data === YT.PlayerState.PLAYING);
-
-        }
-        
-        function updatePlayControl(play) {
-            if (play) {
-                document.getElementById('path-play-button').setAttribute('d', button_pause);
-            } else {
-                document.getElementById('path-play-button').setAttribute('d', button_play);
-            }
-        }
-
-        function updateTimerDisplay() {
-            console.log("TIME-" + player.getCurrentTime());
-            console.log("DURATION-" + player.getDuration());
-            document.getElementById('current-time').textContent = formatTime(player.getCurrentTime());
-            document.getElementById('duration').textContent = formatTime(player.getDuration());
-
-        }
+    <script>           
         var tag = document.createElement('script');
         var button_play = 'M 12,26 18.5,22 18.5,14 12,10 z M 18.5,22 25,18 25,18 18.5,14 z';
         var button_pause = 'M 12,26 16,26 16,10 12,10 z M 21,26 25,26 25,10 21,10 z';
@@ -130,6 +106,34 @@
                 updateProgressBar();
             }, 1000);
         }       
+        
+         function onPlayerStateChange(event) {
+            if(event.data === YT.PlayerState.PLAYING){
+                console.log("TITLE-" + player.videoTitle);
+            }
+            console.log("STATE-" + event.data);            
+            updatePlayControl(event.data === YT.PlayerState.PLAYING);
+        }
+        
+        function checkPlayed(){
+            console.log("STATE-" + player.getPlayerState());
+         }
+        
+        function updatePlayControl(play) {
+            if (play) {
+                document.getElementById('path-play-button').setAttribute('d', button_pause);
+            } else {
+                document.getElementById('path-play-button').setAttribute('d', button_play);
+            }
+        }
+        
+        function updateTimerDisplay() {
+            console.log("TIME-" + player.getCurrentTime());
+            console.log("DURATION-" + player.getDuration());
+            document.getElementById('current-time').textContent = formatTime(player.getCurrentTime());
+            document.getElementById('duration').textContent = formatTime(player.getDuration());
+
+        }
 
         function hideAllComponent() {
         }
