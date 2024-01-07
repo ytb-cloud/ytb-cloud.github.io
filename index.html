@@ -209,7 +209,7 @@
             }, 100);
         }
         function checkLoaded() {
-            return (player != null && player.getPlayerState() !== YT.PlayerState.UNSTARTED && player.getPlayerState() !== YT.PlayerState.CUED);
+            return (player != null && player.getPlayerState() !== YT.PlayerState.UNSTARTED && player.getVideoData().video_id !=== undefined);
         }
         function showPanel(show) {
             if (show) document.getElementById('ytb-panel').style.display = 'block';
